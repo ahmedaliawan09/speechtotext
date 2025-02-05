@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Whisper AI Transcription</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+
+        #result {
+            margin-top: 20px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Upload an Audio File</h1>
+    <input type="file" id="audioFile" accept="audio/*">
+    <button onclick="uploadFile()">Transcribe</button>
+    <p id="status"></p>
+    <h2>Transcription:</h2>
+    <p id="result"></p>
+
+    <script>
+        function uploadFile() {
+            const fileInput = document.getElementById("audioFile");
+            if (!fileInput.files.length) {
+                alert("Please select a file.");
+                return;
+            }
+
+            let formData = new FormData();
+            formData.append("file", fileInput.files[0]);
+
+            document.getElementById("status").innerText = "Processing...";
+
+            fetch("/transcribe", {
+                method: "POST",
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("status").innerText = "";
+                    document.getElementById("result").innerText = data.transcription || "Error transcribing.";
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    document.getElementById("status").innerText = "Error processing file.";
+                });
+        }
+    </script>
+</body>
+
+</html>
